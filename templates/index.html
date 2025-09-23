@@ -7,145 +7,71 @@
   <title>Lab 3 – Rock/Paper/Scissors with Hand Tracking</title>
   <style>
     :root {
-      /* Earthtone palette (light) */
-      --bg: #F6F1E9;            /* soft cream */
-      --fg: #2C2A28;            /* near-black brown */
-      --muted: #7A7368;         /* taupe */
-      --card: #FFFCF7;          /* off-white */
-      --border: #E7E0D5;        /* beige */
-      --primary: #6B4F3B;       /* walnut */
-      --primary-contrast: #ffffff;
-      --pill-bg: #F0E7DD;       /* faint sand */
-      --pill-fg: #2C2A28;
-      --ring: #B08A6A33;        /* translucent accent for focus */
+      /* Minimal blue earth-tone (light) */
+      --bg: #EAF1F6;           /* soft blue-grey */
+      --fg: #1F2A37;           /* deep slate */
+      --muted: #6B7A88;        /* cool taupe */
+      --card: #FFFFFF;         /* clean card */
+      --border: #D8E0E7;       /* pale blue border */
+      --primary: #2F4F6A;      /* muted navy */
+      --primary-contrast: #FFFFFF;
+      --pill-bg: #DFEAF2;      /* soft washed blue */
+      --pill-fg: #1F2A37;
+      --ring: #7BA4C933;       /* translucent ring */
     }
-
     @media (prefers-color-scheme: dark) {
       :root {
-        /* Earthtone palette (dark) */
-        --bg: #15120F;          /* deep umber */
-        --fg: #EDE7DE;          /* warm ivory */
-        --muted: #B5AA9F;       /* dusty beige */
-        --card: #1B1713;        /* dark cocoa */
-        --border: #2A241F;      /* dark sand */
-        --primary: #D6C0AE;     /* sand */
-        --primary-contrast: #1B1713;
-        --pill-bg: #241F1B;     /* muted cocoa */
-        --pill-fg: #EDE7DE;
-        --ring: #D6C0AE44;      /* translucent accent for focus */
+        --bg: #0F141A;         /* deep ink */
+        --fg: #E5EDF4;         /* ivory blue */
+        --muted: #9BB0C2;      /* dusty blue */
+        --card: #121921;       /* dark slate */
+        --border: #1E2933;     /* dark border */
+        --primary: #B9D4E8;    /* soft sky */
+        --primary-contrast: #0F141A;
+        --pill-bg: #18222C;
+        --pill-fg: #E5EDF4;
+        --ring: #9BC2E644;
       }
     }
 
     *, *::before, *::after { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
-      margin: 0;
-      font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: var(--bg);
-      color: var(--fg);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      margin: 0; padding: 20px; min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: var(--bg); color: var(--fg);
+      display: flex; flex-direction: column; gap: 16px;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
     }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 28px 18px 40px;
-      min-height: 100svh;
-    }
-
-    h1 {
-      font-size: clamp(24px, 3.6vw, 40px);
-      font-weight: 650;
-      letter-spacing: -0.015em;
-      margin: 6px 0 24px;
-    }
-
-    h2 { margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; }
-
-    .wrap {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 22px;
-    }
-    @media (min-width: 900px) {
-      .wrap { grid-template-columns: 1fr 1fr; gap: 26px; }
-    }
-
+    h1 { text-align: center; margin: 8px 0 12px; letter-spacing: -0.015em; }
+    .wrap { display: grid; grid-template-columns: 1fr; justify-items: center; gap: 16px; }
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 16px;
+      width: 100%; max-width: 1100px; margin: 0 auto;
       box-shadow: 0 1px 2px rgba(0,0,0,.04);
     }
-
-    img {
-      display: block;
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
+    h2 { margin-top: 0; letter-spacing: -0.01em; }
+    img { display: block; width: 100%; height: auto; max-height: 80vh; object-fit: contain; border-radius: 12px; border: 1px solid var(--border); }
     .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-
-    .btn {
-      appearance: none;
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--primary);
-      color: var(--primary-contrast);
-      cursor: pointer;
-      transition: transform .04s ease, opacity .2s ease, background .2s ease;
-    }
+    .btn { padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; background: var(--primary); color: var(--primary-contrast); transition: transform .04s ease, opacity .2s ease; }
     .btn:hover { transform: translateY(-1px); }
     .btn:active { transform: translateY(0); opacity: .9; }
     .btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-    .btn[disabled] { opacity: .6; cursor: not-allowed; }
-
-    input[type="file"]{
-      font: inherit;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--fg);
-    }
-    input[type="file"]:hover{ border-color: var(--primary); }
-    input[type="file"]:focus-visible{ outline: 2px solid var(--ring); outline-offset: 2px; }
-
-    .pill {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--pill-bg);
-      color: var(--pill-fg);
-      font-weight: 500;
-    }
-
-  .muted { color: var(--muted); }
-  .warn { color: #B94C3A; }
-
-    h3 { margin: 12px 0 8px; }
-
-    ul.flash {
-      margin: 0 0 16px;
-      padding-left: 18px;
-    }
-
-    ol { margin: 0; padding-left: 18px; }
+    .pill { display: inline-block; padding: 6px 10px; background: var(--pill-bg); color: var(--pill-fg); border: 1px solid var(--border); border-radius: 999px; }
+    .warn { color: #C25B5B; }
+    .muted { color: var(--muted); }
+    ul { margin: 0 0 12px; }
   </style>
 </head>
 <body>
-  <main class="container">
-    <h1>Lab 3 – Rock/Paper/Scissors</h1>
+  <h1>Lab 3 – Rock/Paper/Scissors (Hand Detection with MediaPipe + Flask)</h1>
 
   {% with messages = get_flashed_messages() %}
     {% if messages %}
-      <ul class="flash">
+      <ul>
         {% for m in messages %}
           <li class="warn">{{ m }}</li>
         {% endfor %}
@@ -153,53 +79,27 @@
     {% endif %}
   {% endwith %}
 
-    <div class="wrap">
-      <div class="card">
-        <h2>1) Webcam Stream (with landmarks)</h2>
-        <img src="{{ url_for('video_feed') }}" alt="video stream"/>
-        <form action="{{ url_for('snapshot_and_play') }}" method="post" style="margin-top: 12px;">
-          <button class="btn" type="submit">Capture & Play vs Computer</button>
-        </form>
-        <p class="muted">ปุ่มนี้จะจับภาพจากกล้อง 1 เฟรม → ตรวจท่า → เล่นเกมทันที</p>
-      </div>
-
-      <div class="card">
-        <h2>2) Upload Image</h2>
-        <form action="{{ url_for('detect_image') }}" method="post" enctype="multipart/form-data" class="row">
-          <input type="file" name="img" accept="image/*" required />
-          <button class="btn" type="submit">Detect Gesture</button>
-        </form>
-
-        {% if annotated_url %}
-          <h3 style="margin:14px 0 8px">Result</h3>
-          <img src="{{ annotated_url }}" alt="annotated result"/>
-        {% endif %}
-
-        {% if predicted %}
-          <p style="margin-top: 10px">Predicted: <span class="pill">{{ predicted }}</span></p>
-        {% endif %}
-
-        <form action="{{ url_for('battle') }}" method="post" style="margin-top: 12px;">
-          <input type="hidden" name="player_choice" value="{{ last_player_gesture or '' }}">
-          <button class="btn" type="submit" {% if not last_player_gesture %}disabled{% endif %}>
-            Play vs Computer (use detected gesture)
-          </button>
-          {% if not last_player_gesture %}
-            <p class="muted" style="margin:8px 0 0">* ต้องตรวจพบเป็น ROCK / PAPER / SCISSORS ก่อน</p>
-          {% endif %}
-        </form>
-      </div>
+  <div class="wrap">
+    <div class="card">
+      <h2>1) Webcam Stream (with landmarks)</h2>
+      <img src="{{ url_for('video_feed') }}" alt="video stream"/>
+      <form action="{{ url_for('snapshot_and_play') }}" method="post" style="margin-top: 12px;">
+        <button class="btn" type="submit">Capture & Play vs Computer</button>
+      </form>
+      <p style="opacity:.7">ปุ่มนี้จะจับภาพจากกล้อง 1 เฟรม → ตรวจท่า → เล่นเกมทันที</p>
     </div>
 
-    <div class="card" style="margin-top: 22px;">
-      <h2>How to play</h2>
-      <ol>
-        <li>เปิดเว็บหน้านี้แล้วยกมือให้กล้องเห็น (นิ่ง ๆ ชัด ๆ)</li>
-        <li>กด <b>Capture & Play</b> เพื่อให้ระบบจับภาพและเล่นทันที <i>หรือ</i> อัปโหลดไฟล์รูปมือแล้วกด Detect</li>
-        <li>ระบบจะจัดคลาสเป็น ROCK / PAPER / SCISSORS</li>
-        <li>กด <b>Play vs Computer</b> เพื่อสุ่มท่าของคอมฯ แล้วสรุปผล</li>
-      </ol>
-    </div>
-  </main>
+    
+  </div>
+
+  <div class="card" style="margin-top:24px">
+    <h2>How to play</h2>
+    <ol>
+      <li>เปิดเว็บหน้านี้แล้วยกมือให้กล้องเห็น (นิ่ง ๆ ชัด ๆ)</li>
+      <li>กด <b>Capture & Play vs Computer</b> เพื่อให้ระบบจับภาพและเล่นทันที </li>
+      <li>ระบบจะนำภาพที่จับได้ไปประมวลผลและแสดงผลลัพธ์ว่าชนะหรือแพ้เมื่อแข่งกับคอมพิวเตอร์</li>
+      
+    </ol>
+  </div>
 </body>
 </html>

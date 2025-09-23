@@ -3,12 +3,12 @@ import os
 import random
 from typing import Optional
 
+from collections import deque
+
 import cv2
 import numpy as np
 from flask import Flask, render_template, request, Response, redirect, url_for, flash
 import mediapipe as mp
-
-from collections import deque
 
 app = Flask(__name__)
 app.secret_key = "lab3-secret"  # ใช้สำหรับ flash message
@@ -28,7 +28,9 @@ hands_video = mp_hands.Hands(
     min_detection_confidence=0.5, min_tracking_confidence=0.5
 )
 
-# ทำให้ผลการทำนาย gesture บน live stream มันนิ่งขึ้น
+# เก็บผล gesture ล่าสุดของผู้เล่น เพื่อใช้กับปุ่ม Battle
+last_player_gesture: Optional[str] = None
+
 gesture_window = deque(maxlen=5)
 
 def majority_vote(labels):
@@ -40,8 +42,6 @@ def majority_vote(labels):
     # คืนค่าที่เจอบ่อยสุด
     return max(counts, key=counts.get)
 
-# เก็บผล gesture ล่าสุดของผู้เล่น เพื่อใช้กับปุ่ม Battle
-last_player_gesture: Optional[str] = None
 
 # ----------------------
 # TODO #1: ตัวจำแนกท่ามือ R / P / S
@@ -72,7 +72,7 @@ def classifier(Index_tip_y, Index_pip_y,
 
 def classify_from_landmarks(landmarks, image_h, image_w) -> str:
     """ดึงค่าที่ต้องใช้จาก MediaPipe แล้วเรียก classifier
-       """
+       พร้อมตรวจ gesture 🤟 (LOVE) แบบ optional เพิ่มเติม"""
     # ช่วยลัด
     L = mp_hands.HandLandmark
 
@@ -86,6 +86,18 @@ def classify_from_landmarks(landmarks, image_h, image_w) -> str:
         py(L.RING_FINGER_TIP),   py(L.RING_FINGER_PIP),
         py(L.PINKY_TIP),         py(L.PINKY_PIP),
     )
+
+    # (Optional) ตรวจ LOVE 🤟 = Thumb+Index+Pinky up, Middle/Ring down
+    # ต้องดูนิ้วหัวแม่มือเพิ่ม
+    margin = 10
+    thumb_up = py(L.THUMB_TIP) < py(L.THUMB_IP) - margin
+    index_up = py(L.INDEX_FINGER_TIP)  < py(L.INDEX_FINGER_PIP)  - margin
+    middle_up = py(L.MIDDLE_FINGER_TIP) < py(L.MIDDLE_FINGER_PIP) - margin
+    ring_up = py(L.RING_FINGER_TIP)   < py(L.RING_FINGER_PIP)   - margin
+    pinky_up = py(L.PINKY_TIP)        < py(L.PINKY_PIP)         - margin
+
+    if thumb_up and index_up and pinky_up and (not middle_up) and (not ring_up):
+        gesture = "LOVE"
 
     return gesture
 
@@ -109,8 +121,6 @@ def index():
     # แสดงหน้าเว็บหลัก
     return render_template("index.html", last_player_gesture=last_player_gesture)
 
-
-@app.route("/detect_image", methods=["POST"])
 def detect_image():
     global last_player_gesture
     if "img" not in request.files or request.files["img"].filename == "":
@@ -277,5 +287,5 @@ def battle():
     
 
 if __name__ == "__main__":
-    # เปิดเว็บบน http://127.0.0.1:5000
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False, threaded=True)
+

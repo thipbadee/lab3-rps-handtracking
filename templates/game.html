@@ -7,98 +7,46 @@
   <title>RPS – Result</title>
   <style>
     :root {
-      /* Earthtone palette (light) */
-      --bg: #F6F1E9;            /* soft cream */
-      --fg: #2C2A28;            /* near-black brown */
-      --muted: #7A7368;         /* taupe */
-      --card: #FFFCF7;          /* off-white */
-      --border: #E7E0D5;        /* beige */
-      --primary: #6B4F3B;       /* walnut */
-      --primary-contrast: #ffffff;
-      --pill-bg: #F0E7DD;       /* faint sand */
-      --pill-fg: #2C2A28;
+      /* Minimal blue earth-tone (light) */
+      --bg: #EAF1F6;
+      --fg: #1F2A37;
+      --muted: #6B7A88;
+      --card: #FFFFFF;
+      --border: #D8E0E7;
+      --primary: #2F4F6A;
+      --primary-contrast: #FFFFFF;
+      --pill-bg: #DFEAF2;
+      --pill-fg: #1F2A37;
+      --ring: #7BA4C933;
     }
-
     @media (prefers-color-scheme: dark) {
       :root {
-        /* Earthtone palette (dark) */
-        --bg: #15120F;          /* deep umber */
-        --fg: #EDE7DE;          /* warm ivory */
-        --muted: #B5AA9F;       /* dusty beige */
-        --card: #1B1713;        /* dark cocoa */
-        --border: #2A241F;      /* dark sand */
-        --primary: #D6C0AE;     /* sand */
-        --primary-contrast: #1B1713;
-        --pill-bg: #241F1B;     /* muted cocoa */
-        --pill-fg: #EDE7DE;
+        --bg: #0F141A;
+        --fg: #E5EDF4;
+        --muted: #9BB0C2;
+        --card: #121921;
+        --border: #1E2933;
+        --primary: #B9D4E8;
+        --primary-contrast: #0F141A;
+        --pill-bg: #18222C;
+        --pill-fg: #E5EDF4;
+        --ring: #9BC2E644;
       }
     }
 
     *, *::before, *::after { box-sizing: border-box; }
     html, body { height: 100%; }
-    body {
-      margin: 0;
-      font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: var(--bg);
-      color: var(--fg);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    .shell {
-      min-height: 100svh;
-      display: grid;
-      place-items: center;
-      padding: 28px 18px;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 620px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 18px 20px;
-      box-shadow: 0 1px 2px rgba(0,0,0,.04);
-    }
-
-    h1 {
-      font-size: clamp(22px, 3.2vw, 30px);
-      margin: 0 0 4px;
-      letter-spacing: -0.015em;
-    }
-    h2 { margin: 6px 0 0; letter-spacing: -0.01em; }
+    body { margin: 0; background: var(--bg); color: var(--fg); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+    .shell { min-height: 100svh; display: grid; place-items: center; padding: 24px 16px; }
+    .card { width: 100%; max-width: 680px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    h1 { margin: 0 0 6px; letter-spacing: -0.015em; }
+    h2 { margin: 8px 0 0; }
     .big { font-size: 18px; margin: 8px 0; }
-    .muted { color: var(--muted); }
-
-    .pill {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--pill-bg);
-      color: var(--pill-fg);
-      font-weight: 500;
-    }
-
-    .btn {
-      display: inline-block;
-      appearance: none;
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--primary);
-      color: var(--primary-contrast);
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform .04s ease, opacity .2s ease, background .2s ease;
-      margin-top: 14px;
-    }
+    .pill { display: inline-block; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--pill-bg); color: var(--pill-fg); font-weight: 500; }
+    .btn { display: inline-block; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--primary); color: var(--primary-contrast); text-decoration: none; cursor: pointer; transition: transform .04s ease, opacity .2s ease; margin-top: 12px; }
     .btn:hover { transform: translateY(-1px); }
     .btn:active { transform: translateY(0); opacity: .9; }
     .btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-
-    h3 { margin: 12px 0 8px; }
   </style>
 </head>
 <body>
