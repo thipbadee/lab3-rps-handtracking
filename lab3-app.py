@@ -31,6 +31,19 @@ hands_video = mp_hands.Hands(
 # เก็บผล gesture ล่าสุดของผู้เล่น เพื่อใช้กับปุ่ม Battle
 last_player_gesture: Optional[str] = None
 
+VALID_GESTURES = {
+    'ROCK', 'PAPER', 'SCISSORS', 'LOVE'
+}
+# Computer can throw any gesture the player can.
+GAME_CHOICES = ['ROCK', 'PAPER', 'SCISSORS', 'LOVE']
+# Rules: key beats every gesture in its value set.
+WIN_RULES = {
+    'ROCK': {'SCISSORS'},
+    'PAPER': {'ROCK', 'LOVE'},
+    'SCISSORS': {'PAPER'},
+    'LOVE': {'ROCK', 'SCISSORS'}
+}
+
 gesture_window = deque(maxlen=5)
 
 def majority_vote(labels):
@@ -145,7 +158,7 @@ def detect_image():
     out_path = os.path.join("static", "result.jpg")
     cv2.imwrite(out_path, out_bgr)
 
-    last_player_gesture = gesture if gesture in {"ROCK", "PAPER", "SCISSORS"} else None
+    last_player_gesture = gesture if gesture in VALID_GESTURES else None
     return render_template(
         "index.html",
         annotated_url=url_for("static", filename="result.jpg"),
@@ -185,7 +198,7 @@ def gen_frames():
             gesture = classify_from_landmarks(results.multi_hand_landmarks[0], h, w)
 
             # เก็บเข้าหน้าต่าง 5 เฟรม เพื่อให้ผลนิ่งขึ้น
-            if gesture in {"ROCK", "PAPER", "SCISSORS"}:
+            if gesture in VALID_GESTURES:
                 gesture_window.append(gesture)
             else:
                 gesture_window.append("UNKNOWN")
@@ -198,7 +211,7 @@ def gen_frames():
 
         # อัปเดตค่าล่าสุดให้ route /battle ใช้ได้ทันที
         global last_player_gesture
-        last_player_gesture = stable_gesture if stable_gesture in {"ROCK", "PAPER", "SCISSORS"} else None
+        last_player_gesture = stable_gesture if stable_gesture in VALID_GESTURES else None
 
         # แปะตัวหนังสือบนวิดีโอ
         cv2.putText(frame, f"{stable_gesture}", (20, 40),
@@ -250,7 +263,7 @@ def snapshot_and_play():
     draw_landmarks_and_label(frame, results, gesture)
     cv2.imwrite(os.path.join("static", "snapshot.jpg"), frame)
 
-    last_player_gesture = gesture if gesture in {"ROCK", "PAPER", "SCISSORS"} else None
+    last_player_gesture = gesture if gesture in VALID_GESTURES else None
     return redirect(url_for("battle"))
 
 
@@ -264,21 +277,21 @@ def battle():
     else:
         player_choice = last_player_gesture
 
-    if player_choice not in {"ROCK", "PAPER", "SCISSORS"}:
+    if player_choice not in VALID_GESTURES:
         # เผื่อกรณีตรวจได้ LOVE/UNKNOWN/No hand
-        flash("No valid player gesture (need ROCK/PAPER/SCISSORS). Try again.")
+        flash("No valid player gesture (need ROCK/PAPER/SCISSORS/LOVE). Try again.")
         return redirect(url_for("index"))
 
-    computer_choice = random.choice(["ROCK", "PAPER", "SCISSORS"])
+    computer_choice = random.choice(GAME_CHOICES)
 
     if player_choice == computer_choice:
         result = "Tie"
-    elif (player_choice, computer_choice) in {("ROCK", "SCISSORS"),
-                                              ("SCISSORS", "PAPER"),
-                                              ("PAPER", "ROCK")}:
+    elif computer_choice in WIN_RULES[player_choice]:
         result = "You Win"
-    else:
+    elif player_choice in WIN_RULES[computer_choice]:
         result = "You Lose"
+    else:
+        result = "Tie"
 
     return render_template("game.html",
                            computer_choice=computer_choice,
